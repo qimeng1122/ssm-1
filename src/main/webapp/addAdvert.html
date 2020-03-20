@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="css/select.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/editor/themes/default/default.css"/>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="js/select-ui.min.js"></script>
+    <script charset="utf-8" src="/editor/kindeditor-all.js"></script>
+    <script charset="utf-8" src="/editor/lang/zh-CN.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+
+    <script type="text/javascript">
+        KindEditor.ready(function (K) {
+            var editor = KindEditor.create('textarea[name="content"]', {
+                uploadJson: '/kindEditor/fileUpload',
+                fileManagerJson: '/kindEditor/fileManager',
+                filePostName: 'imgFile',//加上这个属性
+                allowImageUpload: true, //多图上传
+                allowFileManager: true,
+                items: ['fontname', 'fontsize', 'forecolor', 'hilitecolor', 'bold',
+                    'italic', 'underline', 'removeformat', 'justifyleft', 'justifycenter', 'justifyright',
+                    'insertorderedlist', 'insertunorderedlist', 'emoticons', 'image', 'multiimage', 'insertfile'],
+                //编辑器失去焦点(blur)时执行的回调函数。
+                // =========必须要有==========
+                afterBlur: function () {
+                    this.sync();
+                },
+                //前台使用 afterUpload 指定文件上传回调函数，可以接收3个参数，url data name 。
+                afterUpload: function () {
+                    alert(url);
+                    // alert(data);
+                    // alert(name);
+                }
+
+            });
+        });
+
+        function sub() {
+            var html = $('#content').val();
+            console.log(html);
+            var title = $('#title').val();
+            $.post("/kindEditor/addAdvert", {'content': html, 'title': title}, function (result) {
+                alert("1!");
+            })
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function(e) {
+            $(".select1").uedSelect({
+                width : 345
+            });
+            $(".select2").uedSelect({
+                width : 167
+            });
+            $(".select3").uedSelect({
+                width : 100
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">首页</a></li>
+        <li><a href="#">系统设置</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+
+    <div id="usual1" class="usual">
+
+        <div class="itab">
+            <ul>
+                <li><a href="#tab1" class="selected">发布通知</a></li>
+                <li><a href="#tab2">自定义</a></li>
+            </ul>
+        </div>
+
+        <div id="tab1" class="tabson">
+
+            <div class="formtext">Hi，<b>admin</b>，欢迎您试用信息发布功能！</div>
+
+            <ul class="forminfo">
+
+                <div style="margin-left: 20px">
+                    <li><label>图片</label>
+                        <form method="post" enctype="multipart/form-data">
+		        <textarea name="content" id="content"
+                          style="width: 20px; height: 150px; visibility: hidden;"></textarea>
+                            <!--<input type="button" onclick="sub()" value="提交"/>-->
+                        </form>
+
+                </div>
+
+
+                <li><label>广告内容<b>*</b></label>
+
+
+                    <div class="vocation">
+                        <select class="select1">
+                            <option>插画设计师</option>
+                            <option>美工</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+
+                </li>
+
+                <li><label>广告类型<b>*</b></label>
+
+
+                    <div class="vocation">
+                        <select class="select1">
+                            <option>插画设计师</option>
+                            <option>美工</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+
+                </li>
+
+                </li>
+                <li><label>区域<b>*</b></label>
+
+                    <div class="usercity">
+
+                        <div class="cityleft">
+                            <select class="select2">
+                                <option>江苏</option>
+                                <option>湖南</option>
+                                <option>广东</option>
+                                <option>北京</option>
+                                <option>湖北</option>
+                            </select>
+                        </div>
+
+                        <div class="cityright">
+                            <select class="select2">
+                                <option>南京</option>
+                                <option>无锡</option>
+                                <option>盐城</option>
+                                <option>徐州</option>
+                                <option>连云港</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </li>
+                <li><label>内容<b>*</b></label>
+
+
+                    <textarea id="content7" name="content" style="width:700px;height:250px;visibility:hidden;"></textarea>
+
+                </li>
+                <li><label>&nbsp;</label><input name="" type="button" class="btn" value="马上发布"/></li>
+            </ul>
+
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        $("#usual1 ul").idTabs();
+    </script>
+
+
+</div>
+
+
+</body>
+
+</html>

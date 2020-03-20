@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+            $(".click").click(function () {
+                $(".tip").fadeIn(200);
+            });
+
+            $(".tiptop a").click(function () {
+                $(".tip").fadeOut(200);
+            });
+
+            $(".sure").click(function () {
+                $(".tip").fadeOut(100);
+            });
+
+            $(".cancel").click(function () {
+                $(".tip").fadeOut(100);
+            });
+            getUserList();
+        });
+
+        //异步加载员工列表数据
+        function getUserList() {
+            $.ajax({
+                url: "/user/selectAllUser",
+                type: "GET",
+                dataType: 'JSON',
+                contentType: "application/json",
+                data: {},
+                success: function (data) {
+                    var obj = data;
+                    console.log(obj);
+                    var html = "";
+                    //清空table中的html
+                    $("#tbody").html("");
+                    for (var i = 0; i < data.data.length; i++) {
+                        html = "<tr>" +
+                            "<th><input name='checkbox' type='checkbox' value=''/></th>" +
+                            "<td>" + data.data[i].id + "</td>" +
+                            "<td>" + data.data[i].depart + "</td>" +
+                            "<td>" + data.data[i].name + "</td>" +
+                            "<td>" + data.data[i].sex + "</td>" +
+                            "<td>" + data.data[i].work + "</td>" +
+                            "<td>" + data.data[i].year + "</td>" +
+                            "<td>" + data.data[i].place + "</td>" +
+                            "<td>" + data.data[i].worktime + "</td>" +
+                            "<td>" + data.data[i].entrytime + "</td>" +
+                            "<td><a href='#' class='tablelink' onclick='stopUser()'>禁用</a>  |  <a href='#' class='tablelink' onclick='startUser();'>点击启用</a></td>"+
+                            "<td><a href='#' class='tablelink' onclick='defaultaa(this)'>修改</a>  |  <a href='#' class='tablelink' onclick='deleteUserById(this);'>删除</a></td>"
+                        "</tr>";
+                        $("#tbody").append(html);
+                    }
+                },
+                error: function (data) {
+                    var obj = JSON.parse(data);
+
+                }
+            });
+        }
+
+        function deleteUserById(obj){
+            var id = getId(obj);
+            $.ajax({
+                url : "/user/deleteUserById?id="+id,
+                type : "delete",
+                dataType:'text',
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    if (obj.code == 10000) {
+                        alert("删除成功");
+                    }
+                    location.reload();
+                }
+            });
+        }
+
+        //获取当前选中的行
+        function getId(obj) {
+            /*var v=$("input[type='checkbox'][name='checkbox']:checked").closest('tr').find('td:eq(0)').map(function(){return this.innerHTML}).get().join();
+            alert(v)*/
+            var tr1 = obj.parentNode.parentNode; //获取当前对象的父节点的父节点（也就是tr）
+            return tr1.cells[1].innerText;
+        }
+    function defaultaa(obj) {
+        window.location.href = "./addUser.html?id="+getId(obj);//在同当前窗口中打开窗口
+    }
+
+    </script>
+
+
+</head>
+
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">首页</a></li>
+        <li><a href="#">数据表</a></li>
+        <li><a href="#">基本内容</a></li>
+    </ul>
+</div>
+
+<div class="rightinfo">
+
+
+
+
+
+
+
+    <div class="tools">
+
+        <ul class="toolbar">
+            <!--<li><a href="tab.html" target="rightFrame">添加</a></li>-->
+            <!--<li ><span><img src="images/t01.png"/></span>添加</li>-->
+            <li><cite></cite><a href="addUser.html" target="rightFrame"><span><img src="images/t01.png"/></span>添加</a><i></i></li>
+            <!--<li><cite></cite><a href="javascript:defaultaa()" target="rightFrame"><span><img src="images/t02.png"/></span>修改</a><i></i></li>
+            <li onclick="deleteUserById()"><span><img src="images/t03.png" /></span>删除</li>
+            <li><span><img src="images/t04.png"/></span>统计</li>-->
+        </ul>
+
+
+        <ul class="toolbar1">
+            <li><span><img src="images/t05.png"/></span>设置</li>
+        </ul>
+
+    </div>
+
+
+    <table class="tablelist" id="table">
+        <thead>
+        <tr>
+            <th><input name="" type="checkbox" value=""/></th>
+            <th>员工编号<i class="sort"><img src="images/px.gif"/></i></th>
+            <th>所属部门</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>岗位</th>
+            <th>年龄</th>
+            <th>籍贯</th>
+            <th>工龄</th>
+            <th>入职时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <!--<tr>
+            <td><input name="" type="checkbox" value=""/></td>
+            <td>1</td>
+            <td>研发</td>
+            <td>admin</td>
+            <td>男</td>
+            <td>java</td>
+            <td>25</td>
+            <td>江苏南京</td>
+            <td>2年</td>
+            <td>2013-09-09</td>
+            <td><a href="#" class="tablelink">禁用</a> <a href="#" class="tablelink"> 点击启用</a></td>
+            <td><a href="#" class="tablelink">查看</a> <a href="#" class="tablelink"> 删除</a></td>
+        </tr>-->
+
+        </tbody>
+    </table>
+
+
+    <div class="pagin">
+        <div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">1&nbsp;</i>页</div>
+        <ul class="paginList">
+            <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
+            <li class="paginItem current"><a href="javascript:;">1</a></li>
+            <li class="paginItem "><a href="javascript:;">2</a></li>
+            <li class="paginItem"><a href="javascript:;">3</a></li>
+            <li class="paginItem"><a href="javascript:;">4</a></li>
+            <li class="paginItem"><a href="javascript:;">5</a></li>
+            <li class="paginItem more"><a href="javascript:;">...</a></li>
+            <li class="paginItem"><a href="javascript:;">10</a></li>
+            <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+        </ul>
+    </div>
+
+
+    <div class="tip">
+        <div class="tiptop"><span>提示信息</span><a></a></div>
+
+        <div class="tipinfo">
+            <span><img src="images/ticon.png"/></span>
+            <div class="tipright">
+                <p>是否确认对信息的修改 ？</p>
+                <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+            </div>
+        </div>
+
+        <div class="tipbtn">
+            <input name="" type="button" class="sure" value="确定"/>&nbsp;
+            <input name="" type="button" class="cancel" value="取消"/>
+        </div>
+
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+    $('.tablelist tbody tr:odd').addClass('odd');
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+    <style>
+        #popupcontent{
+            position: absolute;
+            visibility: hidden;
+            overflow: hidden;
+            border:1px solid #CCC;
+            background-color:#F9F9F9;
+            border:1px solid #333;
+            padding:5px;
+            align-content: center;
+            text-align: center;
+        }
+    </style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $(".click").click(function () {
+        $(".tip").fadeIn(200);
+    });
+
+    $(".tiptop a").click(function () {
+        $(".tip").fadeOut(200);
+    });
+
+    $(".sure").click(function () {
+        $(".tip").fadeOut(100);
+    });
+
+    $(".cancel").click(function () {
+        $(".tip").fadeOut(100);
+    });
+
+    getUserList();
+
+});
+
+
+//异步加载员工列表数据
+function getUserList() {
+    $.ajax({
+        url : "/user/selectAll",
+        type : "GET",
+        dataType:'JSON',
+        contentType:"application/json",
+        data:{},
+        success: function (data) {
+            var obj = data;
+            console.log(obj);
+            var str1 = "";
+            //清空table中的html
+            $("#tbody").html("");
+            for(var i = 0;i < data.data.length; i++){
+                str1 = "<tr>" +
+                    "<th><input name='checkbox' type='checkbox' value=''/></th>"+
+                    "<td>"+data.data[i].id + "</td>" +
+                    "<td>"+data.data[i].name + "</td>" +
+                    "<td>"+data.data[i].place + "</td>" +
+                    "<td>"+data.data[i].worktime + "</td>" +
+                    "<td><a href='#' class='tablelink'>查看</a>    <a href='#' onclick='deleteUserById();'>删除</a></td>"
+                    "</tr>";
+                $("#tbody").append(str1);
+            }
+        },
+        error: function (data) {
+            var obj = JSON.parse(data);
+
+        }
+    });
+}
+
+var baseText = null;
+
+function showPopup(w,h){
+    var popUp = document.getElementById("popupcontent");
+    popUp.style.top = "150px";
+    popUp.style.left = "150px";
+    popUp.style.width = w + "px";
+    popUp.style.height = h + "px";
+    popUp.style.visibility = "visible";
+}
+
+function hidePopup(){
+    var popUp = document.getElementById("popupcontent");
+    popUp.style.visibility = "hidden";
+}
+
+function showPopup2(w,h){
+    selectUserById(getId());
+
+    //console.log($("#updateId").val());
+    showPopup(w,h);
+}
+
+function selectUserById(id) {
+    $.ajax({
+        //几个参数需要注意一下
+        type: "GET",//方法类型
+        dataType: "text",
+        contentType:"application/json",
+        url: "user/selectUserById?id="+id,//url
+        success: function (data) {
+            var obj = JSON.parse(data);
+            console.log(obj.msg);
+            if(obj.msg == "成功") {
+                window.frames["#iframeName"].document.getElementById("#id").innerText=obj.id;
+                /*$("#id",document.frames('iframeName').document).val(obj.id);
+                $("#name",document.frames('iframeName').document).val(obj.name);
+                $("#place",document.frames('iframeName').document).val(obj.place);
+                $("#worktime",document.frames('iframeName').document).val(obj.worktime);*/
+            }
+        }
+    });
+}
+
+function deleteUserById(){
+    var id = getId();
+    $.ajax({
+        url : "/user/deleteUserById?id="+id,
+        type : "delete",
+        dataType:'text',
+        success: function (data) {
+            var obj = JSON.parse(data);
+            console.log(obj);
+            if (obj.code == 10000) {
+                alert("删除成功");
+            }
+
+        }
+});
+}
+
+function getId() {
+    var v=$("input[type='checkbox'][name='checkbox']:checked").closest('tr').find('td:eq(0)').map(function(){return this.innerHTML}).get().join();
+    alert(v)
+    return v;
+}
+
+</script>
+
+
+</head>
+
+
+<body>
+<!--<a href="#" onclick="showPopup(500,600);" >Open popup</a>-->
+<div id="popupcontent" >
+    <iframe name="iframeName" src="addUser.html" width="500px" height=500px align="middle";></iframe>
+    <div id="statusbar"><button onclick="hidePopup();">关闭</button></div>
+    <input id="updateId" type="text" style="display:none" value=""/>
+</div>
+
+
+	<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+    <li><a href="#">首页</a></li>
+    <li><a href="#">员工管理表</a></li>
+    <li><a href="#">员工列表</a></li>
+    </ul>
+    </div>
+    
+    <div class="rightinfo2">
+    
+    <div class="tools">
+    
+    	<ul class="toolbar">
+        <li><span><img src="images/t01.png" /></span><a href="#" onclick="showPopup(500,600);" >添加</a></li>
+        <li><span><img src="images/t02.png" /></span><a href="#" onclick="showPopup2(500,600);" >修改</a></li>
+        <li><span><img src="images/t03.png" /></span><a href="#" onclick="deleteUserById();" >删除</a></li>
+        </ul>
+        
+        
+        <ul class="toolbar1">
+        <li><span><img src="images/t05.png" /></span>设置</li>
+        </ul>
+    
+    </div>
+
+    <table class="tablelist">
+    	<thead>
+    	<tr>
+        <th><input name="" type="checkbox" value="" checked="checked"/></th>
+        <th>编号<i class="sort"><img src="images/px.gif" /></i></th>
+        <th>用户</th>
+        <th>籍贯</th>
+        <th>入职时间</th>
+        <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <!--<tr>
+        <td><input name="" type="checkbox" value="" /></td>
+        <td>20130908</td>
+        <td>admin</td>
+        <td>江苏南京</td>
+        <td>2013-09-09 15:05</td>
+        <td><a href="#" class="tablelink">查看</a>     <a href="#" class="tablelink"> 删除</a></td>
+        </tr> -->
+        </tbody>
+    </table>
+    
+   
+    <div class="pagin">
+    	<div class="message">共<i class="blue">1256</i>条记录，当前显示第&nbsp;<i class="blue">2&nbsp;</i>页</div>
+        <ul class="paginList">
+        <li class="paginItem"><a href="javascript:;"><span class="pagepre"></span></a></li>
+        <li class="paginItem"><a href="javascript:;">1</a></li>
+        <li class="paginItem current"><a href="javascript:;">2</a></li>
+        <li class="paginItem"><a href="javascript:;">3</a></li>
+        <li class="paginItem"><a href="javascript:;">4</a></li>
+        <li class="paginItem"><a href="javascript:;">5</a></li>
+        <li class="paginItem more"><a href="javascript:;">...</a></li>
+        <li class="paginItem"><a href="javascript:;">10</a></li>
+        <li class="paginItem"><a href="javascript:;"><span class="pagenxt"></span></a></li>
+        </ul>
+    </div>
+    
+    
+    <div class="tip">
+    	<div class="tiptop"><span>提示信息</span><a></a></div>
+        
+      <div class="tipinfo">
+        <span><img src="images/ticon.png" /></span>
+        <div class="tipright">
+        <p>是否确认对信息的修改 ？</p>
+        <cite>如果是请点击确定按钮 ，否则请点取消。</cite>
+        </div>
+        </div>
+        
+        <div class="tipbtn">
+        <input name="" type="button"  class="sure" value="确定" />&nbsp;
+        <input name="" type="button"  class="cancel" value="取消" />
+        </div>
+    
+    </div>
+    
+    
+    
+    
+    </div>
+    
+    <script type="text/javascript">
+	$('.tablelist tbody tr:odd').addClass('odd');
+	</script>
+
+</body>
+
+</html>

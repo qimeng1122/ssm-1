@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>无标题文档</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/select.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery.idTabs.min.js"></script>
+    <script type="text/javascript" src="js/select-ui.min.js"></script>
+    <script type="text/javascript" src="editor/kindeditor.js"></script>
+    <script type="text/javascript" src="js/laydate/laydate.js" charset="utf-8"></script>
+
+    <style>
+        .setBtn2 {
+            background: #3284cd;
+            padding: 5px;
+            color: #FFF;
+            border-radius: 8px;
+            width: 65px;
+            margin-left: -68px;
+            margin-top: -39px;
+            font-size: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            $(".select1").uedSelect({
+                width: 300
+            });
+            $(".select2").uedSelect({
+                width: 167
+            });
+            $(".select3").uedSelect({
+                width: 100
+            });
+        });
+        $(function () {
+            //时间插件
+            laydate.render({
+                elem: '#entrytime', //指定元素
+                type: 'date', //日期格式类型
+            });
+            getUrlData();
+
+        });
+
+        //获取url后参数id
+        function getUrlData() {
+            var url = location.search;
+            if (url != undefined) {
+                var id = url.substring(url.length - 2, url.length);
+                $("#id").val(id);
+                console.log(id);
+                selectUserById(id);
+            }
+        }
+
+        //根据id查询回显
+        function selectUserById(id) {
+            $.ajax({
+                //几个参数需要注意一下
+                type: "GET",//方法类型
+                dataType: "text",
+                contentType: "application/json",
+                url: "user/selectUserById?id=" + id,//url
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.msg);
+                    if (obj.msg == "成功") {
+                        $("#name").val(obj.data.name)
+                        $("#sex").val(obj.data.sex)
+                        $("#password").val(obj.data.password)
+                        $("#work").val(obj.data.work)
+                        $("#place").val(obj.data.place)
+                        $("#year").val(obj.data.year)
+                        $("#depart").val(obj.data.depart)
+                        $("#entrytime").val(obj.data.entrytime)
+                        $("#worktime").val(obj.data.worktime)
+                    }
+                }
+            });
+        }
+
+        //提交user数据到后台
+        function saveOrUpdateUser() {
+            var data = {
+                id: -1,
+                name: $("#name").val(),
+                sex: $("#sex").val(),
+                password: $("#password").val(),
+                work: $("#work").val(),
+                place: $("#place").val(),
+                year: $("#year").val(),
+                depart: $("#depart").val(),
+                entrytime: $("#entrytime").val(),
+                worktime: $("#worktime").val()
+            }
+            if ($("#id").val()!= "") {
+                data.id = $("#id").val();
+            }
+            $.ajax({
+                url: "/user/saveOrUpdateUser",
+                type: "POST",
+                dataType: 'text',
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    if (obj.code == 10000) {
+                        alert("保存成功");
+                    }
+                    window.location.href = "./userManager.html";
+                }
+            });
+        }
+
+        //默认密码
+        function defaultPassword() {
+            $("#password").val(123456);
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="place">
+    <span>位置：</span>
+    <ul class="placeul">
+        <li><a href="#">首页</a></li>
+        <li><a href="#">系统设置</a></li>
+    </ul>
+</div>
+
+<div class="formbody">
+
+    <div id="usual1" class="usual">
+
+        <div class="itab">
+            <ul>
+                <li><a href="#tab1" class="selected">发布通知</a></li>
+                <li><a href="#tab2">自定义</a></li>
+            </ul>
+        </div>
+
+        <div id="tab1" class="tabson">
+
+            <div class="formtext"></div>
+
+            <ul class="forminfo">
+                <input id="id" type="text" value="" style="display: none"/>
+                <li><label>姓名<b>*</b></label><input id="name" type="text" class="dfinput" placeholder="请填写姓名"
+                                                    style="width:300px;"/></li>
+
+                <li><label>性别<b>*</b></label>
+                    <div class="vocation">
+                        <select id="sex" class="select1">
+                            <option selected="selected">男</option>
+                            <option>女</option>
+                        </select>
+                    </div>
+                </li>
+
+                <li><label>年龄<b>*</b></label><input id="year" type="text" class="dfinput" placeholder="请填写年龄"
+                                                    style="width:300px;"/></li>
+
+                <li><label>登录密码<b>*</b></label><input id="password" type="text" class="dfinput"
+                                                      placeholder="请填写登录密码"
+                                                      style="width:300px;"/><a href="javascript:defaultPassword()"
+                                                                               class="setBtn2">默认密码</a></li>
+
+                <li><label>籍贯<b>*</b></label><input id="place" type="text" class="dfinput" placeholder="请填写籍贯"
+                                                    style="width:300px;"/></li>
+
+                <li><label>入职时间<b>*</b></label><input id="entrytime" type="text" class="dfinput"
+                                                      placeholder="请填写入职时间"
+                                                      style="width:300px ;"/></li>
+
+                <li><label>部门<b>*</b></label>
+                    <div class="vocation">
+                        <select id="depart" class="select1">
+                            <option selected="selected">研发部</option>
+                            <option>市场运营</option>
+                            <option>行政</option>
+                            <option>会计</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                </li>
+
+                <li><label>岗位<b>*</b></label>
+                    <div class="vocation">
+                        <select id="work" class="select1">
+                            <option selected="selected">UI设计师</option>
+                            <option>交互设计师</option>
+                            <option>前端设计师</option>
+                            <option>网页设计师</option>
+                            <option>Flash动画</option>
+                            <option>视觉设计师</option>
+                            <option>插画设计师</option>
+                            <option>美工</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+
+                <li><label>&nbsp;</label><input name="" type="button" onclick="saveOrUpdateUser()" class="btn" value="保存"/>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
