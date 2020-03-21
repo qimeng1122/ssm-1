@@ -1,21 +1,29 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>无标题文档</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css" />
-    <link href="css/select.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="/editor/themes/default/default.css"/>
-    <script type="text/javascript" src="js/jquery.js"></script>
+    <link href="css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/select.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="editor/themes/default/default.css"/>
+    <!--<script type="text/javascript" src="js/jquery.js "
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>-->
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+            crossorigin="anonymous"></script>
     <script type="text/javascript" src="js/jquery.idTabs.min.js"></script>
     <script type="text/javascript" src="js/select-ui.min.js"></script>
-    <script charset="utf-8" src="/editor/kindeditor-all.js"></script>
-    <script charset="utf-8" src="/editor/lang/zh-CN.js"></script>
-    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="editor/kindeditor-all.js"
+    ></script>
+    <script type="text/javascript" charset="utf-8" src="editor/lang/zh-CN.js"></script>
 
     <script type="text/javascript">
+        var editor;
         KindEditor.ready(function (K) {
-            var editor = KindEditor.create('textarea[name="content"]', {
+            editor = KindEditor.create('textarea[name="content"]', {
                 uploadJson: '/kindEditor/fileUpload',
                 fileManagerJson: '/kindEditor/fileManager',
                 filePostName: 'imgFile',//加上这个属性
@@ -39,38 +47,77 @@
             });
         });
 
-        function sub() {
-            var html = $('#content').val();
-            console.log(html);
-            var title = $('#title').val();
-            $.post("/kindEditor/addAdvert", {'content': html, 'title': title}, function (result) {
-                alert("1!");
-            })
-        }
-    </script>
 
-    <script type="text/javascript">
-        $(document).ready(function(e) {
+        $(document).ready(function (e) {
             $(".select1").uedSelect({
-                width : 345
+                width: 345
             });
             $(".select2").uedSelect({
-                width : 167
+                width: 167
             });
             $(".select3").uedSelect({
-                width : 100
+                width: 100
             });
         });
+
+        $(function () {
+            /*//时间插件
+            laydate.render({
+                elem: '#entrytime', //指定元素
+                type: 'date', //日期格式类型
+            });*/
+            getUrlData();
+
+        });
+
+        //获取url后参数id
+        function getUrlData() {
+            var url = location.search;
+            if (url != undefined) {
+                var id = url.substring(url.length - 2, url.length);
+                id = id.replace("=", "");
+                $("#id").val(id);
+                console.log(id);
+                selectAdvertById(id);
+            }
+        }
+        //根据id查询回显
+        function selectAdvertById(id) {
+            $.ajax({
+                //几个参数需要注意一下
+                type: "GET",//方法类型
+                dataType: "text",
+                contentType: "application/json",
+                url: "advert/selectAdvertById?id="+id,//url
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.msg);
+                    if (obj.msg == "成功") {
+                        editor.html(obj.data.content);
+                        $("#photourlShow").attr('src', obj.data.imgsrc);
+                        $("#imgsrc").val("");
+                        $("#imgsrc").val(obj.data.imgsrc)
+                        $("#kind").val(obj.data.kind)
+                        $("#place").val(obj.data.place)
+                        $("#count").val(obj.data.count)
+                    }
+                }
+            });
+        }
+
     </script>
+
+
 </head>
 
 <body>
+
 
 <div class="place">
     <span>位置：</span>
     <ul class="placeul">
         <li><a href="#">首页</a></li>
-        <li><a href="#">系统设置</a></li>
+        <li><a href="#">广告配置</a></li>
     </ul>
 </div>
 
@@ -81,25 +128,34 @@
 
         <div class="itab">
             <ul>
-                <li><a href="#tab1" class="selected">发布通知</a></li>
-                <li><a href="#tab2">自定义</a></li>
+                <li><a href="#tab1" class="selected">广告配置</a></li>
             </ul>
         </div>
 
+
         <div id="tab1" class="tabson">
 
-            <div class="formtext">Hi，<b>admin</b>，欢迎您试用信息发布功能！</div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <!--<input type="hidden" name="img" id="photoUrl"/>-->
+                    <!--<span><img id="photourlShow" src="" width="300" height="197"/></span>-->
+                    <!--<input type="file" name="logoFile" id="logoFile" onchange="setImg(this);">-->
+                </div>
+            </div>
+
 
             <ul class="forminfo">
+                <li><label>图片<b>*</b></label><span><img id="photourlShow" width="300" height="197"/></span>
+                    <!--<input id="imgId" type="image"  src="" class="dfinput"
+                                                    style="width:300px ; height: 197px"/>--></li>
 
-                <div style="margin-left: 20px">
-                    <li><label>图片</label>
-                        <form method="post" enctype="multipart/form-data">
-		        <textarea name="content" id="content"
-                          style="width: 20px; height: 150px; visibility: hidden;"></textarea>
-                            <!--<input type="button" onclick="sub()" value="提交"/>-->
-                        </form>
+                <!--存图片url路径-->
+                <input type="hidden" name="img" id="imgsrc" value=""/>
+                <input type="hidden" name="id" id="id" value=""/>
 
+                <div style="margin-left: 85px;margin-bottom: 13px">
+                    <input type="file" name="file" id="file"/>
+                    <button id="upload">上传</button>
                 </div>
 
 
@@ -107,9 +163,8 @@
 
 
                     <div class="vocation">
-                        <select class="select1">
-                            <option>插画设计师</option>
-                            <option>美工</option>
+                        <select id="content2 " class="select1">
+                            <option>普通</option>
                             <option>其他</option>
                         </select>
                     </div>
@@ -118,16 +173,13 @@
 
                 <li><label>广告类型<b>*</b></label>
 
-
                     <div class="vocation">
-                        <select class="select1">
-                            <option>插画设计师</option>
-                            <option>美工</option>
+                        <select id="kind" class="select1">
+                            <option>宣传</option>
                             <option>其他</option>
                         </select>
                     </div>
 
-                </li>
 
                 </li>
                 <li><label>区域<b>*</b></label>
@@ -135,16 +187,13 @@
                     <div class="usercity">
 
                         <div class="cityleft">
-                            <select class="select2">
-                                <option>江苏</option>
-                                <option>湖南</option>
-                                <option>广东</option>
-                                <option>北京</option>
-                                <option>湖北</option>
+                            <select id="place" class="select2">
+                                <option>首页</option>
+                                <option>其它</option>
                             </select>
                         </div>
 
-                        <div class="cityright">
+                        <!--<div class="cityright">
                             <select class="select2">
                                 <option>南京</option>
                                 <option>无锡</option>
@@ -152,21 +201,25 @@
                                 <option>徐州</option>
                                 <option>连云港</option>
                             </select>
-                        </div>
+                        </div>-->
 
                     </div>
+
 
                 </li>
                 <li><label>内容<b>*</b></label>
 
 
-                    <textarea id="content7" name="content" style="width:700px;height:250px;visibility:hidden;"></textarea>
+                    <textarea id="content" name="content"
+                              style="width:400px;height:250px;visibility:hidden;"></textarea>
 
                 </li>
-                <li><label>&nbsp;</label><input name="" type="button" class="btn" value="马上发布"/></li>
+                <li><label>&nbsp;</label><input id="saveOrUpdateAdvert" onclick="saveOrUpdateAdvert()" type="button" class="btn" value="保存"/>
+                </li>
             </ul>
 
         </div>
+
 
     </div>
 
@@ -174,10 +227,118 @@
         $("#usual1 ul").idTabs();
     </script>
 
+    <script type="text/javascript">
+        $('.tablelist tbody tr:odd').addClass('odd');
+    </script>
+
 
 </div>
 
 
 </body>
+<script type="text/javascript">
 
+    //-----------------------------------------------------
+
+    (function () {
+        'use strict';
+        var file = document.querySelector('#file');
+        var upload = document.querySelector('#upload');
+        //var imgPreview = document.querySelector('.img-preview');
+        var xhr = new XMLHttpRequest();
+        var loaded = 0, ot = 0, total = 0, oloaded = 0;//;
+        upload.addEventListener('click', uploadFile, false);
+        file.addEventListener('change', previewImage, false);
+
+        // 点击上传
+        function uploadFile(event) {
+            if (!file.files[0]) {
+                alert('请选择文件')
+                return
+            }
+            if (file.files[0].size > 10000000) {
+                alert('文件不得超过10M')
+                return
+            }
+            var formData = new FormData();
+            formData.append('file', file.files[0]);
+            xhr.onload = uploadSuccess;
+            //xhr.upload.onprogress = setProgress;
+            xhr.open('post', '/kindEditor/uploadImg', true);
+            xhr.send(formData);
+        }
+
+        // 成功上传
+        function uploadSuccess(event) {
+            $("#imgsrc").val("");
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                //返回结果
+                var blob = JSON.parse(xhr.response);
+                console.log(blob);
+                $("#imgsrc").val(blob.data.url)
+                setTimeout(function () {
+                    alert('上传成功')
+                }, 1000);
+            }
+        }
+
+        // 图片预览
+        function previewImage(event) {
+            //imgPreview.innerHTML = ''
+            // 每次重新选择文件的时候，都会去除上次选择产生的img标签
+            var isImg = (event.target.files[0].type).indexOf('image/') > -1;
+            if (isImg) {
+                // 如果是图片 就解析图片预览
+                //var img = document.createElement('img')
+                //imgPreview.appendChild(img)
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    //img.src = event.target.result;
+                    //img.width = '200'
+
+                    $("#photourlShow").attr('src', event.target.result);
+                    $("#imgId").attr('src', event.target.result);
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            } else {
+                // imgPreview.appendChild('<img src=""/>')
+                // 可以为非图片文件选择一个默认的文件logo
+            }
+        }
+
+        //++++++++++++++++++++++++++++++++++++++++++++
+    })();
+
+    //保存广告内容
+    function saveOrUpdateAdvert() {
+        var content = editor.html();
+        console.log(content);
+        var data={
+            "id" : -1,
+            "content" : editor.html(),
+            "imgsrc": $("#imgsrc").val(),
+            "kind" : $("#kind").val(),
+            "place" : $("#place").val(),
+            "count" : 1
+        }
+        if ($("#id").val()!= "") {
+            data.id = $("#id").val();
+        }
+        $.ajax({
+            url: "/advert/saveOrUpdateAdvert",
+            type: "POST",
+            dataType: 'json',
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (data) {
+                console.log(data.code)
+                if (data.code == 10000) {
+                    alert("保存成功");
+                }
+                window.location.href = "./advertManager.html";
+            }
+        });
+
+    }
+</script>
 </html>

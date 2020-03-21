@@ -69,7 +69,7 @@
         function deleteUserById(obj){
             var id = getId(obj);
             $.ajax({
-                url : "/user/deleteUserById?id="+id,
+                url : "/user/deleteAdvertById?id="+id,
                 type : "delete",
                 dataType:'text',
                 success: function (data) {

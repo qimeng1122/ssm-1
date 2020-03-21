@@ -12,7 +12,48 @@
                 $(".imglist li.selected").removeClass("selected")
                 $(this).addClass("selected");
             })
+
+            getUserList();
         })
+
+        //异步加载员工列表数据
+        function getUserList() {
+            $.ajax({
+                url: "/advert/selectAll",
+                type: "GET",
+                dataType: 'JSON',
+                contentType: "application/json",
+                data: {},
+                success: function (data) {
+                    var obj = data;
+                    console.log(obj);
+                    var html = "";
+                    //清空table中的html
+                    $("#tbody").html("");
+                    var imgsrc;
+                    for (var i = 0; i < data.data.length; i++) {
+                        imgsrc=data.data[i].imgsrc;
+                        html = "<tr>" +
+                            "<th><input name='checkbox' type='checkbox' value=''/></th>" +
+                            "<td>"+ data.data[i].id + "</td>" +
+                            "<td class='imgtd'> <img src= "+"\""+data.data[i].imgsrc+"\""+"/ ></td>" +
+                            "<td>" + data.data[i].kind + "</td>" +
+                            "<td>" + data.data[i].createtime + "</td>" +
+                            "<td>" + data.data[i].place + "</td>" +
+                            "<td>" + data.data[i].count + "</td>" +
+                            "<td><a href='#' class='tablelink' onclick='stopUser()'>禁用</a>  |  <a href='#' class='tablelink' onclick='startUser();'>点击启用</a></td>"+
+                            "<td><a href='#' class='tablelink' onclick='defaultaa(this)'>修改</a>  |  <a href='#' class='tablelink' onclick='deleteAdvertById(this);'>删除</a></td>"
+                        "</tr>";
+                        $("#tbody").append(html);
+                    }
+                },
+                error: function (data) {
+                    var obj = JSON.parse(data);
+
+                }
+            });
+        }
+
     </script>
     <script type="text/javascript">
         $(document).ready(function(){
@@ -33,9 +74,34 @@
             });
 
         });
+        //获取当前选中的行
+        function getId(obj) {
+            var tr1 = obj.parentNode.parentNode; //获取当前对象的父节点的父节点（也就是tr）
+            return tr1.cells[1].innerText;
+        }
 
-        //获取广告列表
+        //删除
+        function deleteAdvertById(obj) {
+            var id = getId(obj);
+            $.ajax({
+                url : "/advert/deleteAdvertById?id="+id,
+                type : "delete",
+                dataType:'text',
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    if (obj.code == 10000) {
+                        alert("删除成功");
+                    }
+                    location.reload();
+                }
+            });
+        }
 
+        function defaultaa(obj) {
+            console.log(getId(obj));
+            window.location.href = "./addAdvert.html?id="+getId(obj);//在同当前窗口中打开窗口
+        }
     </script>
 </head>
 
@@ -68,11 +134,11 @@
 
     </div>
 
-
     <table class="imgtable">
 
         <thead>
         <tr>
+            <th><input name="" type="checkbox" value=""/></th>
             <th width="100px;">序号</th>
             <th>广告图片</th>
             <th>广告类型</th>
@@ -84,9 +150,8 @@
         </tr>
         </thead>
 
-        <tbody>
-
-        <tr>
+        <tbody id="tbody">
+        <!--<tr>
             <td class="imgtd"><img src="images/img11.png" /></td>
             <td><a href="#">非常不错的国外后台模板，支持HTML5</a><p>发布时间：2013-10-12 09:25:18</p></td>
             <td>后台界面<p>ID: 82122</p></td>
@@ -94,7 +159,7 @@
             <td>admin</td>
             <td>已审核</td>
             <td>128</td>
-        </tr>
+        </tr>-->
 
         </tbody>
 
