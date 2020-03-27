@@ -78,9 +78,12 @@
                 id = id.replace("=", "");
                 $("#id").val(id);
                 console.log(id);
-                selectAdvertById(id);
+                if (id != "") {
+                    selectAdvertById(id);
+                }
             }
         }
+
         //根据id查询回显
         function selectAdvertById(id) {
             $.ajax({
@@ -88,7 +91,7 @@
                 type: "GET",//方法类型
                 dataType: "text",
                 contentType: "application/json",
-                url: "advert/selectAdvertById?id="+id,//url
+                url: "advert/selectAdvertById?id=" + id,//url
                 success: function (data) {
                     var obj = JSON.parse(data);
                     console.log(obj.msg);
@@ -151,7 +154,7 @@
 
                 <!--存图片url路径-->
                 <input type="hidden" name="img" id="imgsrc" value=""/>
-                <input type="hidden" name="id" id="id" value=""/>
+                <input type="hidden" name="id" id="id" value="-1"/>
 
                 <div style="margin-left: 85px;margin-bottom: 13px">
                     <input type="file" name="file" id="file"/>
@@ -214,7 +217,8 @@
                               style="width:400px;height:250px;visibility:hidden;"></textarea>
 
                 </li>
-                <li><label>&nbsp;</label><input id="saveOrUpdateAdvert" onclick="saveOrUpdateAdvert()" type="button" class="btn" value="保存"/>
+                <li><label>&nbsp;</label><input id="saveOrUpdateAdvert" onclick="saveOrUpdateAdvert()" type="button"
+                                                class="btn" value="保存"/>
                 </li>
             </ul>
 
@@ -313,15 +317,15 @@
     function saveOrUpdateAdvert() {
         var content = editor.html();
         console.log(content);
-        var data={
-            "id" : -1,
-            "content" : editor.html(),
+        var data = {
+            "id": -1,
+            "content": editor.html(),
             "imgsrc": $("#imgsrc").val(),
-            "kind" : $("#kind").val(),
-            "place" : $("#place").val(),
-            "count" : 1
+            "kind": $("#kind").val(),
+            "place": $("#place").val(),
+            "count": 1
         }
-        if ($("#id").val()!= "") {
+        if ($("#id").val() != "") {
             data.id = $("#id").val();
         }
         $.ajax({

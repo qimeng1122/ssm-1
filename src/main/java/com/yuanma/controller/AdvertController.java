@@ -27,13 +27,13 @@ public class AdvertController {
         return ResultUtil.success(advertService.selectAdvertById(Integer.parseInt(id)));
     }
 
-    @DeleteMapping("/saveOrUpdateAdvert")
+    @PostMapping("/saveOrUpdateAdvert")
     @ResponseBody
     public Result saveOrUpdateAdvert(@RequestBody Advert Advert) {
         return ResultUtil.success(advertService.saveOrUpdateAdvert(Advert));
     }
 
-    @RequestMapping("/deleteAdvertById")
+    @DeleteMapping("/deleteAdvertById")
     @ResponseBody
     public Result deleteAdvertById(String id) {
         return ResultUtil.success(advertService.deleteAdvertById(Integer.parseInt(id)));
